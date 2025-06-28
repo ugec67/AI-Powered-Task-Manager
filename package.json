@@ -1,8 +1,8 @@
 {
-  "name": "AI-Powered Task Manager",
+  "name": "ai-powered-task-manager",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://ugec67.github.io/AI-Powered Task Manager",
+  "homepage": "https://ugec67.github.io/AI-Powered-Task-Manager",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
