@@ -10,7 +10,7 @@ const App = () => {
 
   // Task structure now includes a 'status' field: 'todo', 'in-progress', 'done'
   const [tasks, setTasks] = useState([]);
-  const [newTaskText, setNewTaskText] = useState('');
+  const [newTaskText, setNewTaskText] = useState(''); // Corrected: useState('') instead of ''
   const [aiLoadingTaskId, setAiLoadingTaskId] = useState(null); // Tracks which task is being analyzed by AI
   const [breakdownLoadingTaskId, setBreakdownLoadingTaskId] = useState(null); // Tracks which task is being broken down
 
@@ -236,7 +236,7 @@ const App = () => {
       </div>
 
       {/* AI Analysis and Action Buttons */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4 sm:mt-0 w-full">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 mt-4 sm:mt-0 w-full">
         {task.aiAnalysis && (
           <div className="text-sm bg-ai-analysis px-3 py-1 rounded-lg font-medium shadow-inner flex-shrink-0 w-full sm:w-auto">
             <span className="font-semibold">Cat:</span> {task.aiAnalysis.category} | <span className="font-semibold">Prio:</span> {task.aiAnalysis.priority}
@@ -244,36 +244,39 @@ const App = () => {
           </div>
         )}
 
-        <button
-          onClick={() => analyzeTaskWithAI(task.id, task.text)}
-          disabled={aiLoadingTaskId === task.id}
-          className={`px-4 py-2 text-md font-medium rounded-lg transition duration-200 whitespace-nowrap
-            ${aiLoadingTaskId === task.id
-              ? 'bg-blue-300 text-white cursor-not-allowed'
-              : 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm'
-            }`}
-        >
-          {aiLoadingTaskId === task.id ? 'Analyzing...' : 'AI Analyze'}
-        </button>
+        {/* Group buttons for better control and spacing */}
+        <div className="flex flex-wrap gap-2 sm:gap-3 flex-grow justify-end">
+          <button
+            onClick={() => analyzeTaskWithAI(task.id, task.text)}
+            disabled={aiLoadingTaskId === task.id}
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition duration-200 whitespace-nowrap
+              ${aiLoadingTaskId === task.id
+                ? 'bg-blue-300 text-white cursor-not-allowed'
+                : 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm'
+              }`}
+          >
+            {aiLoadingTaskId === task.id ? 'Analyzing...' : 'AI Analyze'}
+          </button>
 
-        <button
-          onClick={() => breakdownTaskWithAI(task.id, task.text)}
-          disabled={breakdownLoadingTaskId === task.id}
-          className={`px-4 py-2 text-md font-medium rounded-lg transition duration-200 whitespace-nowrap
-            ${breakdownLoadingTaskId === task.id
-              ? 'bg-green-300 text-white cursor-not-allowed'
-              : 'bg-green-500 text-white hover:bg-green-600 shadow-sm'
-            }`}
-        >
-          {breakdownLoadingTaskId === task.id ? 'Breaking Down...' : 'Breakdown Task'}
-        </button>
+          <button
+            onClick={() => breakdownTaskWithAI(task.id, task.text)}
+            disabled={breakdownLoadingTaskId === task.id}
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition duration-200 whitespace-nowrap
+              ${breakdownLoadingTaskId === task.id
+                ? 'bg-green-300 text-white cursor-not-allowed'
+                : 'bg-green-500 text-white hover:bg-green-600 shadow-sm'
+              }`}
+          >
+            {breakdownLoadingTaskId === task.id ? 'Breaking Down...' : 'Breakdown Task'}
+          </button>
 
-        <button
-          onClick={() => deleteTask(task.id)}
-          className="px-4 py-2 text-md font-medium rounded-lg bg-red-500 text-white hover:bg-red-600 shadow-sm transition duration-200 whitespace-nowrap"
-        >
-          Delete
-        </button>
+          <button
+            onClick={() => deleteTask(task.id)}
+            className="px-3 py-2 text-sm font-medium rounded-lg bg-red-500 text-white hover:bg-red-600 shadow-sm transition duration-200 whitespace-nowrap"
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
       {/* AI Sub-Tasks Section */}
