@@ -10,7 +10,7 @@ const App = () => {
 
   // Task structure now includes a 'status' field: 'todo', 'in-progress', 'done'
   const [tasks, setTasks] = useState([]);
-  const [newTaskText, setNewTaskText] = useState(''); // Corrected: useState('') instead of ''
+  const [newTaskText, setNewTaskText] = useState('');
   const [aiLoadingTaskId, setAiLoadingTaskId] = useState(null); // Tracks which task is being analyzed by AI
   const [breakdownLoadingTaskId, setBreakdownLoadingTaskId] = useState(null); // Tracks which task is being broken down
 
@@ -75,7 +75,7 @@ const App = () => {
       if (task.id === taskId) {
         // If moving to 'done', mark as completed, otherwise uncomplete
         const newCompleted = newStatus === 'done' ? true : false;
-        return { ...task, status: newStatus, completed: newCompleted };
+        return { ...task, completed: newCompleted, status: newStatus };
       }
       return task;
     }));
@@ -111,8 +111,15 @@ const App = () => {
         }
       };
 
-      // API key is handled by the Canvas environment for gemini-2.0-flash
-      const apiKey = "";
+      // API key is now accessed via environment variable
+      const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
+      if (!apiKey) {
+        console.error("Gemini API Key is not set. Please set REACT_APP_GEMINI_API_KEY environment variable.");
+        setTasks(tasks.map(task =>
+            task.id === taskId ? { ...task, aiAnalysis: { category: "Error", priority: "Error", notes: "API Key Missing!" } } : task
+        ));
+        return; // Exit early if API key is missing
+      }
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
       const response = await fetch(apiUrl, {
@@ -122,7 +129,9 @@ const App = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Attempt to read error message from response body
+        const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        throw new Error(`API call failed: ${errorData.error?.message || errorData.message || response.statusText}`);
       }
 
       const result = await response.json();
@@ -175,7 +184,15 @@ const App = () => {
         }
       };
 
-      const apiKey = ""; // API key is handled by the Canvas environment
+      // API key is now accessed via environment variable
+      const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
+      if (!apiKey) {
+        console.error("Gemini API Key is not set. Please set REACT_APP_GEMINI_API_KEY environment variable.");
+        setTasks(tasks.map(task =>
+            task.id === taskId ? { ...task, aiSubTasks: ["API Key Missing."], isSubTasksVisible: true } : task
+        ));
+        return; // Exit early if API key is missing
+      }
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
       const response = await fetch(apiUrl, {
@@ -185,7 +202,9 @@ const App = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Attempt to read error message from response body
+        const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        throw new Error(`API call failed: ${errorData.error?.message || errorData.message || response.statusText}`);
       }
 
       const result = await response.json();
