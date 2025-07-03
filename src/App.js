@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 // Main App component
 const App = () => {
-  // Initialize theme from localStorage or default to 'light'
+  // Initialize theme from localStorage or default to 'light' 
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
     return savedTheme || 'light';
